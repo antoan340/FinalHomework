@@ -41,7 +41,66 @@ public class GameBoard extends JFrame implements MouseListener {
 
     }
 
+    public void randomTraps(){
+        this.traps = new Traps[9][9];
+        trapCount=8;
+        do{
+            randOne = ThreadLocalRandom.current().nextInt(1,9);
+            randTwo = ThreadLocalRandom.current().nextInt(1,9);
+            if(traps[randOne][randTwo]==null&&snake[randOne][randTwo]==null) {
+                this.traps[randOne][randTwo] = new Traps(randOne,randTwo,Color.BLACK);
+                trapCount--;
+            }
+        }while (trapCount>0);
+    }
+    public void randomFoodSpawn(){
+        this.food = new Food[9][9];
+        randOne = ThreadLocalRandom.current().nextInt(1,9);
+        randTwo = ThreadLocalRandom.current().nextInt(1,9);
+        if(snake[randOne][randTwo]==null && traps[randOne][randTwo]==null){
+            this.food[randOne][randTwo] = new Food(randOne,randTwo,Color.PINK);
+        }
+        else  randomFoodSpawn();
+    }
+    public void spawnSnake(){
+        this.snake = new Snake[9][9];
+        randOne = ThreadLocalRandom.current().nextInt(1,4);
+        switch (randOne) {
+            case 1 -> this.snake[1][1] = (new Snake(1, 1, Color.YELLOW));
+            case 2 -> this.snake[8][1] = (new Snake(8, 1, Color.YELLOW));
+            case 3 -> this.snake[1][8] = (new Snake(1, 8, Color.YELLOW));
+            default ->this.snake[8][8] = (new Snake(8, 8, Color.YELLOW));
+        }
+    }
 
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int row = this.getBoardDimentionBasedOnCoordinates(e.getY());
+        int col = this.getBoardDimentionBasedOnCoordinates(e.getX());
+        if ((row < 9 && col < 9)) {
+            if (this.snakeHead != null) {
+                if (this.hasFood(row, col)) {
+                    points += 15;
+                    label.setText("Points = " + points);
+                    if (points == 300)
+                        Modal.render(this, "Atention", "You win");
+                }
+                if (points < 15) {
+                    this.snake[row][col] = new Snake(row, col, Color.YELLOW);
+                    this.snake[rowStart][colStart] = null;
+                    snakeHead = null;
+                }
+                repaint();
+            } else {
+                rowStart = row;
+                colStart = col;
+                if (this.hasSnake(row, col)) {
+                    this.snakeHead = this.getSnake(row, col);
+                }
+
+            }
+        }
+    }
    @Override
     public void paint(Graphics g) {
 
