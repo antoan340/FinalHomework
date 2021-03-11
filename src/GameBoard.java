@@ -42,7 +42,7 @@ public class GameBoard extends JFrame implements MouseListener {
     }
 
     public void randomTraps(){
-        this.traps = new Traps[9][9];
+        this.traps = new Traps[10][10];
         trapCount=8;
         do{
             randOne = ThreadLocalRandom.current().nextInt(1,9);
@@ -54,7 +54,7 @@ public class GameBoard extends JFrame implements MouseListener {
         }while (trapCount>0);
     }
     public void randomFoodSpawn(){
-        this.food = new Food[9][9];
+        this.food = new Food[10][10];
         randOne = ThreadLocalRandom.current().nextInt(1,9);
         randTwo = ThreadLocalRandom.current().nextInt(1,9);
         if(snake[randOne][randTwo]==null && traps[randOne][randTwo]==null){
@@ -63,7 +63,7 @@ public class GameBoard extends JFrame implements MouseListener {
         else  randomFoodSpawn();
     }
     public void spawnSnake(){
-        this.snake = new Snake[9][9];
+        this.snake = new Snake[10][10];
         randOne = ThreadLocalRandom.current().nextInt(1,4);
         switch (randOne) {
             case 1 -> this.snake[1][1] = (new Snake(1, 1, Color.YELLOW));
@@ -77,25 +77,20 @@ public class GameBoard extends JFrame implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         int row = this.getBoardDimentionBasedOnCoordinates(e.getY());
         int col = this.getBoardDimentionBasedOnCoordinates(e.getX());
-        if ((row < 9 && col < 9)) {
+        if((row==0||col==0||row==9||col==9)&& this.snakeHead != null){
+            trueWarlls(row,col,rowStart,colStart);
+        }
+        if (this.hasTrap(row, col) && this.snakeHead != null) {
+            snakeWipe();
+            Modal.render(this, "Warning", "You lose");
+            repaint();
+        } else {
             if (this.snakeHead != null) {
-                if(hasSnake(row,col)){
+                if (hasSnake(row, col)) {
                     System.out.println("Opa");
-                }
-                else {
+                } else {
                     if (this.hasFood(row, col)) {
-                        points += 15;
-                        food[row][col] = null;
-                        this.snake[row][col] = new Snake(row, col, Color.YELLOW);
-                        this.snake[rowStart][colStart] = new Snake(rowStart, colStart, Color.BLUE);
-                        if (points == 15) {
-                            rowEnd = rowStart;
-                            colEnd = colStart;
-                        }
-                        if(points==30){
-                            rowNearEnd = rowStart;
-                            colNearEnd = colStart;
-                        }
+                        foodEat( row,col);
                         randomFoodSpawn();
                         label.setText("Points = " + points);
                         if (points == 300)
@@ -106,12 +101,12 @@ public class GameBoard extends JFrame implements MouseListener {
                             this.snake[rowStart][colStart] = null;
 
                         }
-                        if (points == 15) {
-                            this.snake[row][col] = new Snake(row, col, Color.YELLOW);
-                            this.snake[rowStart][colStart].color = Color.BLUE;
-                            this.snake[rowEnd][colEnd] = null;
-                            rowEnd = rowStart;
-                            colEnd = colStart;
+                        if (points >= 15) {
+                                this.snake[row][col] = new Snake(row, col, Color.YELLOW);
+                                this.snake[rowStart][colStart].color = Color.BLUE;
+                                this.snake[rowEnd][colEnd] = null;
+                                rowEnd = rowStart;
+                                colEnd = colStart;
                         }
                     }
                     snakeHead = null;
@@ -123,7 +118,65 @@ public class GameBoard extends JFrame implements MouseListener {
                 if (this.hasSnake(row, col)) {
                     this.snakeHead = this.getSnake(row, col);
                 }
-
+            }
+        }
+    }
+    public void foodEat(int row,int col){
+        points += 15;
+        food[row][col] = null;
+        this.snake[row][col] = new Snake(row, col, Color.YELLOW);
+        this.snake[rowStart][colStart] = new Snake(rowStart, colStart, Color.BLUE);
+        if (points == 15) {
+            rowEnd = rowStart;
+            colEnd = colStart;
+        }
+        if (points == 30) {
+            rowNearEnd = rowStart;
+            colNearEnd = colStart;
+        }
+    }
+    public void trueWarlls(int row,int col,int rowStart,int colStart){
+        if(row==0){
+            row=8;
+            this.snake[row][col] = new Snake(row, col, Color.YELLOW);
+            this.snake[rowStart][colStart].color = Color.BLUE;
+            this.snake[rowEnd][colEnd] = null;
+            rowEnd = rowStart;
+            colEnd = colStart;
+        }
+        if(row==9){
+            row=1;
+            this.snake[row][col] = new Snake(row, col, Color.YELLOW);
+            this.snake[rowStart][colStart].color = Color.BLUE;
+            this.snake[rowEnd][colEnd] = null;
+            rowEnd = rowStart;
+            colEnd = colStart;
+        }
+        if(col==0){
+            col=8;
+            this.snake[row][col] = new Snake(row, col, Color.YELLOW);
+            this.snake[rowStart][colStart].color = Color.BLUE;
+            this.snake[rowEnd][colEnd] = null;
+            rowEnd = rowStart;
+            colEnd = colStart;
+        }
+        if(col==9){
+            col=1;
+            this.snake[row][col] = new Snake(row, col, Color.YELLOW);
+            this.snake[rowStart][colStart].color = Color.BLUE;
+            this.snake[rowEnd][colEnd] = null;
+            rowEnd = rowStart;
+            colEnd = colStart;
+        }
+        snakeHead=null;
+        repaint();
+    }
+    public void snakeWipe(){
+        for(int row = 1 ; row<9;row++){
+            for(int col = 1 ; col<9;col++){
+                if (this.hasSnake(row, col)) {
+                    this.snake[row][col]=null;
+                }
             }
         }
     }
@@ -141,17 +194,14 @@ public class GameBoard extends JFrame implements MouseListener {
 
     }
 
-    /**
-     * @param "обекта "гард
-     * @author Antoan
-   */
+
     private Traps getTrap(int row, int col) {
         return this.traps[row][col];
 
     }
 
     /**
-     * @param "проверка за дали гарда не е нулл"
+     * @param "проверка за дали трапа не е нулл"
      * @author Antoan
      * */
 
