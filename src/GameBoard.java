@@ -77,7 +77,7 @@ public class GameBoard extends JFrame implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         int row = this.getBoardDimentionBasedOnCoordinates(e.getY());
         int col = this.getBoardDimentionBasedOnCoordinates(e.getX());
-        if((row==0||col==0||row==9||col==9)&& this.snakeHead != null){
+        if((row==0||col==0||row==9||col==9)&& this.snakeHead != null&&(row-rowStart>-2&&row-rowStart<2)&&(col-colStart>-2&&col-colStart<2)){
             trueWarlls(row,col,rowStart,colStart);
         }
         if (this.hasTrap(row, col) && this.snakeHead != null) {
@@ -85,7 +85,7 @@ public class GameBoard extends JFrame implements MouseListener {
             Modal.render(this, "Warning", "You lose");
             repaint();
         } else {
-            if (this.snakeHead != null) {
+            if (this.snakeHead != null&&(row-rowStart>-2&&row-rowStart<2)&&(col-colStart>-2&&col-colStart<2)) {
                 if (hasSnake(row, col)) {
                     System.out.println("Opa");
                 } else {

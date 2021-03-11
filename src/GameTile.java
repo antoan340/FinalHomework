@@ -36,7 +36,7 @@ public class GameTile {
     /**
      *
      * @author Antoan
-     * @param "Визоализиране на квадратите и на кръгчето в центъра на полето"
+     * @param "Визоализиране на квадратите "
      */
     public void RenderCubes(Graphics g) {
         g.setColor(Color.white);
