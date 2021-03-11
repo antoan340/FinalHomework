@@ -29,7 +29,9 @@ public class GameBoard extends JFrame implements MouseListener {
         label.setBounds(30,-15,100,50);
         this.add(label);
         this.setLayout(null);
-
+        spawnSnake();
+        randomTraps();
+        randomFoodSpawn();
 
         setTitle("Mythic snake");
         this.setSize(600, 600);
@@ -40,13 +42,6 @@ public class GameBoard extends JFrame implements MouseListener {
     }
 
 
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        int row = this.getBoardDimentionBasedOnCoordinates(e.getY());
-        int col = this.getBoardDimentionBasedOnCoordinates(e.getX());
-      
-    }
    @Override
     public void paint(Graphics g) {
 
