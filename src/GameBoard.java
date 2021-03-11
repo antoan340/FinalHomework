@@ -79,18 +79,44 @@ public class GameBoard extends JFrame implements MouseListener {
         int col = this.getBoardDimentionBasedOnCoordinates(e.getX());
         if ((row < 9 && col < 9)) {
             if (this.snakeHead != null) {
-                if (this.hasFood(row, col)) {
-                    points += 15;
-                    label.setText("Points = " + points);
-                    if (points == 300)
-                        Modal.render(this, "Atention", "You win");
+                if(hasSnake(row,col)){
+                    System.out.println("Opa");
                 }
-                if (points < 15) {
-                    this.snake[row][col] = new Snake(row, col, Color.YELLOW);
-                    this.snake[rowStart][colStart] = null;
+                else {
+                    if (this.hasFood(row, col)) {
+                        points += 15;
+                        food[row][col] = null;
+                        this.snake[row][col] = new Snake(row, col, Color.YELLOW);
+                        this.snake[rowStart][colStart] = new Snake(rowStart, colStart, Color.BLUE);
+                        if (points == 15) {
+                            rowEnd = rowStart;
+                            colEnd = colStart;
+                        }
+                        if(points==30){
+                            rowNearEnd = rowStart;
+                            colNearEnd = colStart;
+                        }
+                        randomFoodSpawn();
+                        label.setText("Points = " + points);
+                        if (points == 300)
+                            Modal.render(this, "Atention", "You win");
+                    } else {
+                        if (points < 14) {
+                            this.snake[row][col] = new Snake(row, col, Color.YELLOW);
+                            this.snake[rowStart][colStart] = null;
+
+                        }
+                        if (points == 15) {
+                            this.snake[row][col] = new Snake(row, col, Color.YELLOW);
+                            this.snake[rowStart][colStart].color = Color.BLUE;
+                            this.snake[rowEnd][colEnd] = null;
+                            rowEnd = rowStart;
+                            colEnd = colStart;
+                        }
+                    }
                     snakeHead = null;
+                    repaint();
                 }
-                repaint();
             } else {
                 rowStart = row;
                 colStart = col;
